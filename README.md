@@ -1,6 +1,6 @@
 # proyectoCapstone
 
-Gracias por visitar el GitHub del proyecto Capstone "Sistema de vigilancia casera para adultos mayores" realizado por: **José Lino Carrillo Villalobos** en colaboración con **Arturo Javier López Fausto**. 
+Gracias por visitar el GitHub del proyecto Capstone **"Sistema de vigilancia Casera para Adultos Mayores"** realizado por: **José Lino Carrillo Villalobos** en colaboración con **Arturo Javier López Fausto**. 
 Este sitio encontraras  los diagramas de Hardaware y una parte del Software del proyecto.
 
 Objetivo: Tener un sistema de Monitoreo para adultos mayores que están solo en casa, mediante envío de mensajes por Telegram, además de trabajar con Mqtt, Node-Red y Mysql para el procesamiento de los datos generados por los sensores:
