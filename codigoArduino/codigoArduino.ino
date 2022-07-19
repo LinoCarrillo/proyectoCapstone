@@ -54,8 +54,8 @@ impartido por: Codigo IoT (codigoiot.com)
 const char* ssid = "Totalplay-CF9E";
 const char* password = "CF9EE11F7ypz9xST";
 const int INTERVAL = 5000;  // Intervalo de espera entre lecturas
-String chatId = "960888596";  //Chat ID para el manejo de Bot Personal
-//String chatId = "-651852793";  // Chat ID para el manejo de Bot en un Grupo Previamente Creado
+//String chatId = "960888596";  //Chat ID para el manejo de Bot Personal
+String chatId = "-651852793";  // Chat ID para el manejo de Bot en un Grupo Previamente Creado
 
 // Initialize Telegram BOT
 String BOTtoken = "5571952789:AAFsoghLaMjsXuy1woaTLec0gg2vCgsbbNE";
@@ -226,7 +226,7 @@ void loop(){
   Serial.print("Temperatura: ");
   Serial.print(t);
   Serial.println(" *C ");
-  if ((ValorSensorDht_1>=25.5)||(ValorSensorDht_2>=60))
+  if ((ValorSensorDht_1>=26.5)||(ValorSensorDht_2>=60))
      {
         bot.sendMessage(chatId, "Se han Detectado Temperatura o humedad altas en la Remacara Principal:","");
         char dataString[8]; // Define una arreglo de caracteres para enviarlos por MQTT, especifica la longitud del mensaje en 8 caracteres
