@@ -484,7 +484,8 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
         "x": 750,
@@ -502,6 +503,111 @@
         "wires": [
             [
                 "5bfaeb8476ebbb18"
+            ]
+        ]
+    },
+    {
+        "id": "d8bd9786d2adf3d1",
+        "type": "mqtt in",
+        "z": "73916aabf7218a65",
+        "name": "",
+        "topic": "CodigoIoT/SIC/G5/B_P",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "ca462e86c2aa4086",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "cd1f41ea63f075c4"
+            ]
+        ]
+    },
+    {
+        "id": "a7acf9cf0c5bbbf7",
+        "type": "function",
+        "z": "73916aabf7218a65",
+        "name": "",
+        "func": "\nvar1=global.get(\"B_P\");\nvar2=\"Botón de Pánico\";\n\n//global.set (\"MQ_135\", parseInt(msg.payload));\n//msg.topic=\"INSERT INTO med3 (fecha,sensor,valor) VALUES ('\"+\"Sensor MQ135\"+\"','\"+global.get (\"MQ_135\")+\"')\";\n//global.set (\"MQ_135\", parseInt(msg.payload));\nvar tzoffset=(new Date()).getTimezoneOffset()*60000; //offset en milisegundos\nfechahora=(new Date(Date.now()-tzoffset)).toISOString().slice(0,-1);\n\n//msg.topic=\"INSERT INTO med3 (fecha,sensor,valor) VALUES ('\"+NOW()+\"','\"+Sensor Temperatura+\"','\"+global.get (temp)+\"')\";\n\n//msg.topic=\"INSERT INTO med3  VALUES (\"+fechahora+\"','+\"Sensor MQ135\"+','+global.get (\"MQ_135\")+)\";\nmsg.topic=\"INSERT INTO med3(fecha,sensor,valor)  VALUES ('\"+fechahora+\"','\"+var2+\"','\"+var1+\"')\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 400,
+        "wires": [
+            [
+                "c8ac52e93e38ebe1"
+            ]
+        ]
+    },
+    {
+        "id": "22dcb8083854e18c",
+        "type": "debug",
+        "z": "73916aabf7218a65",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1070,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "c8ac52e93e38ebe1",
+        "type": "mysql",
+        "z": "73916aabf7218a65",
+        "mydb": "5985bd1225719007",
+        "name": "",
+        "x": 910,
+        "y": 400,
+        "wires": [
+            [
+                "22dcb8083854e18c"
+            ]
+        ]
+    },
+    {
+        "id": "0daedf6180604164",
+        "type": "function",
+        "z": "73916aabf7218a65",
+        "name": "",
+        "func": "//msg.payload = global.get(\"MQ_135\");\n//msg.payload = msg.payload.MQ_135;\n//return msg;\n//global.set (\"MQ_135\",parseInt(msg.payload.MQ_135));\nglobal.set (\"B_P\", parseInt(msg.payload));\n//msg.payload = msg.payload.MQ_135;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 400,
+        "wires": [
+            [
+                "a7acf9cf0c5bbbf7"
+            ]
+        ]
+    },
+    {
+        "id": "cd1f41ea63f075c4",
+        "type": "json",
+        "z": "73916aabf7218a65",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 370,
+        "y": 400,
+        "wires": [
+            [
+                "0daedf6180604164"
             ]
         ]
     },

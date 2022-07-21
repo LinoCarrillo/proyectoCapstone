@@ -1,7 +1,7 @@
 /* 
 Sistema de Vigilancia casera para adultos mayores
 
-Realizo: José Lino Carrillo Villalobos como parte del equipo realizado con: Arturo Javier López Fausto.
+Realizo: José Lino Carrillo Villalobos, Arturo Javier López Fausto y Julio Cesar Ortiz Cornejo.
 
 Fecha: 18 Julio 2022
 
@@ -46,26 +46,28 @@ impartido por: Codigo IoT (codigoiot.com)
 #define mq6_Pin 2  // Esta variable indica el pin en el que se conecta el sensor MQ-6
 #define mq135_Pin 12  // Esta variable indica el pin en el que se conecta el sensor MQ-135
 #define dht_Pin 15 // Esta variable indica el pin en el que se conecta el sensor DHT22
+#define pinon 14 //Botón de Pánico
 #define DHTTYPE DHT22   // Sensor DHT22
 
 // Manejo de Variables a Utilizar
 
 //Configuración de la Red a utilizar
-const char* ssid = "Totalplay-CF9E";
-const char* password = "CF9EE11F7ypz9xST";
-const int INTERVAL = 5000;  // Intervalo de espera entre lecturas
-//String chatId = "960888596";  //Chat ID para el manejo de Bot Personal
-String chatId = "-651852793";  // Chat ID para el manejo de Bot en un Grupo Previamente Creado
+const char* ssid = "AQUI VA EL NOMBRE DE TU RED ó SSID";
+const char* password = "AQUI VA EL PASSWORD DE TU RED";
+const int INTERVAL = 3000;  // Intervalo de espera entre lecturas
+String chatId = "AQUI VA EL CHATID PERSONAL DE TELEGRAM";  //Chat ID para el manejo de Bot Personal, consulta la documentacion para ver como se genera
+//String chatId = "-AQUI VA EL CHAT-ID DE UN GRUPO DE TELEGRAM";  // Chat ID para el manejo de Bot en un Grupo Previamente Creado, consulta la documentacion para ver como se genera
 
 // Initialize Telegram BOT
-String BOTtoken = "5571952789:AAFsoghLaMjsXuy1woaTLec0gg2vCgsbbNE";
+String BOTtoken = "AQUI VA TU TOKEN DE TELEGRAM"; // Revisa la documentación para ver como se obtiene
 bool sendPhoto = false;
 //Datos del broker MQTT
-const char* mqtt_server = "192.168.100.110"; // Si estas en una red local, coloca la IP asignada, en caso contrario, coloca la IP publica
+const char* mqtt_server = "###.###.###.###"; // Si estas en una red local, coloca la IP asignada (la que muestre el sistema), en caso contrario, coloca la IP publica
 
 
 // Objetos
-IPAddress server(192,168,100,110);
+IPAddress server(###,###,###,###); misma dirección IP que la linea anterior, separa por comas (,)
+
 
 WiFiClient espClient; // Este objeto maneja los datos de conexion WiFi
 PubSubClient client(espClient); // Este objeto maneja los datos de conexion al broker
@@ -98,7 +100,8 @@ int flashLedPin = 4;  // Para indicar el estatus de conexión
 //int statusLedPin = 16; // Para ser controlado por MQTT
 long timeNow, timeLast; // Variables de control de tiempo no bloqueante
 int data = 0; // Contador
-int wait = 5000;  // Indica la espera cada 5 segundos para envío de mensajes MQTT
+int estaon = LOW; //Para botón de pánico
+int wait = 3000;  // Indica la espera cada 5 segundos para envío de mensajes MQTT
 //============================== Void Setup  =====================
 void setup()
 {
@@ -108,6 +111,7 @@ void setup()
   pinMode(mq6_Pin,INPUT); // Se configura el pin 2 como entrada
   pinMode(mq135_Pin,INPUT); // Se configura el pin 16 como entrada
   pinMode (flashLedPin, OUTPUT);
+  pinMode(pinon, INPUT);  //para el botón de Pánico
  // pinMode (statusLedPin, OUTPUT);
   digitalWrite (flashLedPin, LOW);
   //digitalWrite (statusLedPin, HIGH);
@@ -127,7 +131,7 @@ void setup()
  //   delay(500); //dado que es de suma importancia esperar a la conexión, debe usarse espera bloqueante
 //    digitalWrite (statusLedPin, LOW);
     Serial.print(".");  // Indicador de progreso
-    delay (500);
+    delay (1000);
   }
   Serial.println();
   Serial.println("WiFi conectado");
@@ -189,7 +193,7 @@ void setup()
   if (err != ESP_OK) 
   {
     Serial.printf("Camera init failed with error 0x%x", err);
-    delay(1000);
+    delay(500);
     ESP.restart();
   }
 
@@ -209,10 +213,34 @@ void setup()
   {
     Serial.printf("set intr type failed with error 0x%x \r\n", err);
   }
-  INTERVAL;
+  delay(INTERVAL);
 }//Final Void Setup
 // =================  Void Loop  ==================
 void loop(){
+   estaon = digitalRead(pinon);
+
+    if (estaon == HIGH) {
+    // ENTONCES ENCENDEMOS EL LED
+      delay(100);
+      digitalWrite(flashLedPin, HIGH);
+     int B_P=1; 
+     Serial.println("Botón de Pánico Presionado");
+     bot.sendMessage(chatId, "Se ha Presionado el Botón de Pánico Favor de comunicarse con sus Familiares :","");
+     char dataString[8]; // Define una arreglo de caracteres para enviarlos por MQTT, especifica la longitud del mensaje en 8 caracteres
+     dtostrf(B_P, 1, 2, dataString);  // Esta es una función nativa de leguaje AVR que convierte un arreglo de caracteres en una variable String
+     Serial.print("Se Presiono el Botón de Pánico: "); // Se imprime en monitor solo para poder visualizar que el evento sucede
+     Serial.println(dataString);
+     client.publish("CodigoIoT/SIC/G5/B_P", dataString); // Esta es la función que envía los datos por MQTT, especifica el tema y el valor
+
+
+  }
+  else
+  {
+        // ENTONCES APAGAMOS EL LED
+
+      digitalWrite(flashLedPin, LOW);
+
+    }
   
   // Contro de la Temperatura y Humedad  Sensor DHT 22
   
@@ -226,9 +254,9 @@ void loop(){
   Serial.print("Temperatura: ");
   Serial.print(t);
   Serial.println(" *C ");
-  if ((ValorSensorDht_1>=26.5)||(ValorSensorDht_2>=60))
+  if ((ValorSensorDht_1>=28)||(ValorSensorDht_2>=60))
      {
-        bot.sendMessage(chatId, "Se han Detectado Temperatura o humedad altas en la Remacara Principal:","");
+        bot.sendMessage(chatId, "Se han Detectado Temperatura o humedad altas en la Recamara Principal:","");
         char dataString[8]; // Define una arreglo de caracteres para enviarlos por MQTT, especifica la longitud del mensaje en 8 caracteres
         float temp=t;
         dtostrf(t, 1, 2, dataString);  // Esta es una función nativa de leguaje AVR que convierte un arreglo de caracteres en una variable String
@@ -244,20 +272,20 @@ void loop(){
      }
 
  // Contro de la Calidad del Aire  Sensor MQ 135
-  int MQ_estado = digitalRead(mq135_Pin); //Leemos la terminal digital "12" del sensor
+  ValorSensorMq135 = digitalRead(mq135_Pin); //Leemos la terminal digital "12" del sensor
  
-  if(MQ_estado==1) //si la salida del sensor es 1
+  if(ValorSensorMq135==1) //si la salida del sensor es 1
   {
    Serial.println("Sin presencia de gases en el ambiente");
    //Serial.println(mq135_Pin);
   }
   else //si la salida del sensor es 0
   {
-   int MQ_135=MQ_estado; 
+   int MQ_135=ValorSensorMq135; 
    Serial.println("Gases detectados en el ambiente");
    bot.sendMessage(chatId, "Se han detectado Gases en el ambiente Favor de avisar a los Familiares :","");
    char dataString[8]; // Define una arreglo de caracteres para enviarlos por MQTT, especifica la longitud del mensaje en 8 caracteres
-   dtostrf(MQ_135, 6, 2, dataString);  // Esta es una función nativa de leguaje AVR que convierte un arreglo de caracteres en una variable String
+   dtostrf(MQ_135, 1, 2, dataString);  // Esta es una función nativa de leguaje AVR que convierte un arreglo de caracteres en una variable String
    Serial.print("Gases en el Ambiente: "); // Se imprime en monitor solo para poder visualizar que el evento sucede
    Serial.println(dataString);
    client.publish("CodigoIoT/SIC/G5/MQ_135", dataString); // Esta es la función que envía los datos por MQTT, especifica el tema y el valor
@@ -504,7 +532,14 @@ void handleNewMessages(int numNewMessages)
     //Mensajes para controlar el Led Integrado a la Placa ESP32 CAM
     if (text == "/led") {
       flashState = !flashState;
+  
       digitalWrite(FLASH_LED_PIN, flashState);
+//      for (i=1;10;i++)
+//      {
+    delay(3000);flashState = !flashState;
+//        digitalWrite(FLASH_LED_PIN, flashState);
+    //    delay(100);      
+//      }
     }
     
     //Mensaje para Tomar Foto de la camara de la Placa ESP 32 CAM
@@ -534,7 +569,7 @@ void handleNewMessages(int numNewMessages)
         {
           bot.sendMessage(chatId, "Sin Presencia de Gases en el Medio Ambiente, su valor Digital esta en: ","");
         }
-        if (ValorSensorMq135==0)
+        else
         {
           bot.sendMessage(chatId, "CUIDADO, Presencia de Gases en el Medio Ambiente, su valor Digital esta en:","");
         }
