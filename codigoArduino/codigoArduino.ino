@@ -1,12 +1,18 @@
 /* 
 Sistema de Vigilancia casera para adultos mayores
 
-Realizo: José Lino Carrillo Villalobos, Arturo Javier López Fausto y Julio Cesar Ortiz Cornejo.
+Realizo: 
+    José Lino Carrillo Villalobos, 
+    Arturo Javier López Fausto y 
+    Julio Cesar Ortiz Cornejo.
 
 Fecha: 18 Julio 2022
 
 Como parte del proyecto Final del Diplomado: Internet de las Cosas de Samsung Innovation Campus
 impartido por: Codigo IoT (codigoiot.com)
+
+
+Material en el GitHub : https://github.com/LinoCarrillo/proyectoCapstone
 
 
 */
